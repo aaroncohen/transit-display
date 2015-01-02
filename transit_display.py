@@ -117,4 +117,4 @@ def get_bus_times(agency_tag, stop_id, walk_time):
 
 if __name__ == "__main__":
     while True:
-        cycle_screens(5)
+        cycle_screens(10)
