@@ -78,7 +78,7 @@ def display_on_lcd(text_rows):
         if len(row) > LCD_WIDTH:
             squished_rows.append(squish_text(row)[:LCD_WIDTH])
         else:
-            print squished_rows.append(row.center(LCD_WIDTH))
+            squished_rows.append(row.center(LCD_WIDTH))
     lcd.message("\n".join(squished_rows[:LCD_HEIGHT]))
 
 
@@ -116,4 +116,5 @@ def get_bus_times(agency_tag, stop_id, walk_time):
     return routes
 
 if __name__ == "__main__":
-    cycle_screens(5)
+    while True:
+        cycle_screens(5)
