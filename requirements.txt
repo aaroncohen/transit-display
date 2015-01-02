@@ -1,8 +1,10 @@
-PyYAML==3.11
 arrow==0.4.4
+cffi==0.8.6
 configurati==0.2.3
+pycparser==2.10
 python-dateutil==2.3
+PyYAML==3.11
 raspberry-pi-lcd==1.1.1
 requests==2.5.1
 six==1.8.0
-wsgiref==0.1.2
+smbus-cffi==0.4.1

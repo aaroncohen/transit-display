@@ -3,12 +3,12 @@ from abbreviations import bart_abbreviations, city_abbreviations
 import nextbus
 import arrow
 from operator import itemgetter
-import lcd
+from lcd import lcd
 
 LCD_WIDTH = 16
 LCD_HEIGHT = 2
 
-ROUTE_BLACKLIST = ['88']
+ROUTE_BLACKLIST = []
 
 # (stop number, time to walk -- add 3 to google maps)
 STOPS = {
@@ -73,12 +73,13 @@ def squish_text(text):
 
 
 def display_on_lcd(text_rows):
-    # for row in text_rows[:LCD_HEIGHT]:
-    #     if len(row) > LCD_WIDTH:
-    #         print squish_text(row)[:LCD_WIDTH]
-    #     else:
-    #         print row.center(LCD_WIDTH)
-    lcd.message("\n".join(text_rows[:LCD_HEIGHT]))
+    squished_rows = []
+    for row in text_rows[:LCD_HEIGHT]:
+        if len(row) > LCD_WIDTH:
+            squished_rows.append(squish_text(row)[:LCD_WIDTH])
+        else:
+            print squished_rows.append(row.center(LCD_WIDTH))
+    lcd.message("\n".join(squished_rows[:LCD_HEIGHT]))
 
 
 def cycle_screens(dwell_time=5):
