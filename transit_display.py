@@ -106,7 +106,11 @@ def cycle_screens(dwell_time=5):
 
 
 def get_bus_times(agency_tag, stop_id, walk_time):
-    predictions = nextbus.get_predictions_for_stop(agency_tag, stop_id).predictions
+    try:
+        predictions = nextbus.get_predictions_for_stop(agency_tag, stop_id).predictions
+    except Exception:
+        print "Failed to get times from NextBus"
+
     routes = {}
     for prediction in predictions:
         route_title = prediction.direction.route.title
