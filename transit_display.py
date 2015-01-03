@@ -1,9 +1,16 @@
 import time
+import signal
 from abbreviations import bart_abbreviations, city_abbreviations
 import nextbus
 import arrow
 from operator import itemgetter
-from lcd import lcd
+
+try:
+    from lcd import lcd
+except ImportError:
+    import mocklcd as lcd
+
+import threading
 
 LCD_WIDTH = 16
 LCD_HEIGHT = 2
@@ -23,9 +30,7 @@ STOPS = {
     ]
 }
 
-
-def strike(text):
-    return '\u0336'.join(text) + '\u0336'
+latest_predictions = {}
 
 
 def friendly_prediction_time(epoch_time, walk_time=None):
@@ -83,7 +88,7 @@ def display_on_lcd(text_rows):
 
 
 def cycle_screens(dwell_time=5):
-    for agency, stops in STOPS.iteritems():
+    for agency, stops in latest_predictions.iteritems():
         for stop, walk_time in stops:
             route_predictions = get_bus_times(agency, stop, walk_time)
             for route_name in sorted(route_predictions):
@@ -104,9 +109,11 @@ def get_bus_times(agency_tag, stop_id, walk_time):
     predictions = nextbus.get_predictions_for_stop(agency_tag, stop_id).predictions
     routes = {}
     for prediction in predictions:
-        if not prediction.direction.route.title in routes:
-            routes[prediction.direction.route.title] = []
-        routes[prediction.direction.route.title].append(
+        route_title = prediction.direction.route.title
+        if not route_title in routes:
+            routes[route_title] = []
+
+        routes[route_title].append(
             {
                 'epoch_time': prediction.epoch_time,
                 'destination': prediction.direction.title,
@@ -115,6 +122,54 @@ def get_bus_times(agency_tag, stop_id, walk_time):
         )
     return routes
 
+
+def get_latest_predictions(agency, stops):
+    return {(stop, walk_time): get_bus_times(agency, stop, walk_time) for stop, walk_time in stops}
+
+
+def update_all_latest_predictions():
+    for agency, stops in STOPS.iteritems():
+            latest_predictions[agency] = get_latest_predictions(agency, stops)
+
+
+class StoppableThread(threading.Thread):
+    """Thread class with a stop() method. The thread itself has to check
+    regularly for the stopped() condition."""
+
+    def __init__(self):
+        super(StoppableThread, self).__init__()
+        self._stop = threading.Event()
+
+    def stop(self):
+        self._stop.set()
+
+    def stopped(self):
+        return self._stop.isSet()
+
+
+class APIThread(StoppableThread):
+    def run(self):
+        while not self._stop.is_set():
+            update_all_latest_predictions()
+            time.sleep(30)
+
+
+class ScreenThread(StoppableThread):
+    def run(self):
+        while not self._stop.is_set():
+            cycle_screens()
+
 if __name__ == "__main__":
-    while True:
-        cycle_screens(10)
+    update_all_latest_predictions()
+
+    api_thread = APIThread()
+    api_thread.daemon = True
+
+    screen_thread = ScreenThread()
+    screen_thread.daemon = True
+
+    api_thread.start()
+    screen_thread.start()
+
+    api_thread.join()
+    screen_thread.join()
