@@ -89,13 +89,12 @@ def display_on_lcd(text_rows):
 
 def cycle_screens(dwell_time=5):
     for agency, stops in latest_predictions.iteritems():
-        for stop, walk_time in stops:
-            route_predictions = get_bus_times(agency, stop, walk_time)
-            for route_name in sorted(route_predictions):
+        for stop, predictions in stops.iteritems():
+            for route_name, times in predictions.iteritems():
                 if route_name in ROUTE_BLACKLIST:
                     continue
 
-                predictions = sorted(route_predictions[route_name], key=itemgetter("epoch_time"))
+                predictions = sorted(times, key=itemgetter("epoch_time"))
                 joined_time = " & ".join([prediction['friendly_time'] for prediction in predictions if prediction['friendly_time']][:2]) or "No prediction"
 
                 top_line = ("%s-%s" % (route_name, predictions[0]['destination']))
@@ -106,12 +105,14 @@ def cycle_screens(dwell_time=5):
 
 
 def get_bus_times(agency_tag, stop_id, walk_time):
+    routes = {}
+
     try:
         predictions = nextbus.get_predictions_for_stop(agency_tag, stop_id).predictions
     except Exception:
         print "Failed to get times from NextBus"
+        return routes
 
-    routes = {}
     for prediction in predictions:
         route_title = prediction.direction.route.title
         if not route_title in routes:
