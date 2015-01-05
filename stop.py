@@ -1,7 +1,7 @@
 import arrow
 import nextbus
 
-ROUTE_BLACKLIST = ['88', 'F']
+ROUTE_BLACKLIST = ['88']
 
 
 class Stop(object):
