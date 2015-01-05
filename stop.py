@@ -3,6 +3,9 @@ import nextbus
 
 ROUTE_BLACKLIST = ['88']
 
+START_HOUR = 7
+END_HOUR = 22
+
 
 class Stop(object):
     def __init__(self, agency, stop_number, walk_time):
@@ -20,6 +23,9 @@ class Stop(object):
 
 def get_bus_times(agency_tag, stop_id, walk_time):
     routes = {}
+
+    if not START_HOUR <= arrow.now().hour < END_HOUR:
+        return routes
 
     try:
         predictions = nextbus.get_predictions_for_stop(agency_tag, stop_id).predictions
