@@ -1,6 +1,8 @@
 import arrow
 import nextbus
 
+ROUTE_BLACKLIST = ['88', 'F']
+
 
 class Stop(object):
     def __init__(self, agency, stop_number, walk_time):
@@ -27,16 +29,18 @@ def get_bus_times(agency_tag, stop_id, walk_time):
 
     for prediction in predictions:
         route_title = prediction.direction.route.title
-        if not route_title in routes:
-            routes[route_title] = []
 
-        routes[route_title].append(
-            {
-                'epoch_time': prediction.epoch_time,
-                'destination': prediction.direction.title,
-                'friendly_time': friendly_prediction_time(prediction.epoch_time, walk_time)
-            }
-        )
+        if route_title not in ROUTE_BLACKLIST:
+            if not route_title in routes:
+                routes[route_title] = []
+
+            routes[route_title].append(
+                {
+                    'epoch_time': prediction.epoch_time,
+                    'destination': prediction.direction.title,
+                    'friendly_time': friendly_prediction_time(prediction.epoch_time, walk_time)
+                }
+            )
     return routes
 
 

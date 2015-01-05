@@ -7,8 +7,6 @@ from stop import Stop
 import threading
 
 
-ROUTE_BLACKLIST = []
-
 # (stop number, time to walk -- add 3 to google maps)
 STOPS = [
     Stop('actransit', 53653, 5),  # Market & 46th
@@ -27,9 +25,6 @@ def cycle_screens(dwell_time=5):
 
     for stop in STOPS:
         for route_name, times in stop.predictions.iteritems():
-            if route_name in ROUTE_BLACKLIST:
-                continue
-
             predictions = sorted(times, key=itemgetter("epoch_time"))
             joined_time = " & ".join([prediction['friendly_time'] for prediction in predictions if prediction['friendly_time']][:2]) or "No prediction"
 
