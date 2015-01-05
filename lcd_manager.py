@@ -8,6 +8,7 @@ try:
     from Adafruit_CharLCDPlate import Adafruit_CharLCDPlate as LCD
     lcd = LCD()
 except ImportError:
+    print "Using mocklcd"
     import mocklcd as lcd
 
 
