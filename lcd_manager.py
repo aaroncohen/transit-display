@@ -13,6 +13,7 @@ except ImportError:
 
 
 def message(message):
+    lcd.backlight(lcd.ON)
     lcd.clear()
     lcd.message(message)
 
