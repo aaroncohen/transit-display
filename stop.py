@@ -24,7 +24,7 @@ class Stop(object):
 def get_bus_times(agency_tag, stop_id, walk_time):
     routes = {}
 
-    if not START_HOUR <= arrow.now().hour < END_HOUR:
+    if not START_HOUR <= arrow.now('US/Pacific').hour < END_HOUR:
         return routes
 
     try:
