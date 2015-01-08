@@ -16,6 +16,7 @@ def message(message):
     lcd.backlight(lcd.ON)
     lcd.clear()
     lcd.message(message)
+    print(message)
 
 
 def clear():
@@ -54,4 +55,4 @@ def display_on_lcd(text_rows):
             squished_rows.append(squish_text(row)[:LCD_WIDTH])
         else:
             squished_rows.append(row.center(LCD_WIDTH))
-    lcd.message("\n".join(squished_rows[:LCD_HEIGHT]))
+    message("\n".join(squished_rows[:LCD_HEIGHT]))
