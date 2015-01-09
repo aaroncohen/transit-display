@@ -25,7 +25,6 @@ def clear():
 
 def off():
     lcd.clear()
-    lcd.noDisplay()
     lcd.backlight(lcd.OFF)
 
 
