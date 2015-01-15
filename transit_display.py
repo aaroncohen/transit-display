@@ -33,6 +33,7 @@ def cycle_screens(dwell_time=5):
 
             display_on_lcd([top_line, bottom_line])
             time.sleep(dwell_time)
+            1/0
 
 
 def update_all_latest_predictions():
@@ -58,14 +59,22 @@ class StoppableThread(threading.Thread):
 class APIThread(StoppableThread):
     def run(self):
         while not self._stop.is_set():
-            update_all_latest_predictions()
+            try:
+                update_all_latest_predictions()
+            except Exception as e:
+                display_on_lcd([str(e)[0:lcd_manager.LCD_WIDTH], str(e)[lcd_manager.LCD_WIDTH:lcd_manager.LCD_WIDTH*2]])
+                raise e
             time.sleep(30)
 
 
 class ScreenThread(StoppableThread):
     def run(self):
         while not self._stop.is_set():
-            cycle_screens()
+            try:
+                cycle_screens()
+            except Exception as e:
+                display_on_lcd([str(e)[0:lcd_manager.LCD_WIDTH], str(e)[lcd_manager.LCD_WIDTH:lcd_manager.LCD_WIDTH*2]])
+                raise e
 
 if __name__ == "__main__":
     update_all_latest_predictions()
