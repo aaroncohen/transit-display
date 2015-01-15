@@ -33,7 +33,6 @@ def cycle_screens(dwell_time=5):
 
             display_on_lcd([top_line, bottom_line])
             time.sleep(dwell_time)
-            1/0
 
 
 def update_all_latest_predictions():
